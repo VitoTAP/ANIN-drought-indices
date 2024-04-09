@@ -1,9 +1,4 @@
-import json
-import os
-import datetime
 import openeo
-import geopandas as gpd
-import sys
 from openeo_utils.utils import *
 
 connection = get_connection()
@@ -31,15 +26,21 @@ SPI_dc = SPI_dc.apply_dimension(
 
 UDF_code = load_udf(os.path.join(os.path.dirname(__file__), "SPI_UDF.py"))
 SPI_dc = SPI_dc.apply_dimension(dimension="t", code=UDF_code, runtime="Python")
-SPI_dc = SPI_dc.rename_labels('bands', ['SPI'])
+SPI_dc = SPI_dc.rename_labels("bands", ["SPI"])
 
-previous_month_UDF_code = load_udf(os.path.join(os.path.dirname(__file__), "previous_month_UDF.py"))
-SPI_previous_month_dc = SPI_dc.apply_dimension(dimension="t", code=previous_month_UDF_code, runtime="Python")
-SPI_previous_month_dc = SPI_previous_month_dc.rename_labels('bands', ['SPI_previous_month'])
+previous_month_UDF_code = load_udf(
+    os.path.join(os.path.dirname(__file__), "previous_month_UDF.py")
+)
+SPI_previous_month_dc = SPI_dc.apply_dimension(
+    dimension="t", code=previous_month_UDF_code, runtime="Python"
+)
+SPI_previous_month_dc = SPI_previous_month_dc.rename_labels(
+    "bands", ["SPI_previous_month"]
+)
 
 if __name__ == "__main__":
-    # geojson = load_south_africa_geojson()
-    geojson = load_johannesburg_geojson()
+    geojson = load_south_africa_geojson()
+    # geojson = load_johannesburg_geojson()
     SPI_dc = SPI_dc.filter_spatial(geojson)
 
     SPI_dc = SPI_dc.filter_temporal("2021-01-01", "2023-07-01")

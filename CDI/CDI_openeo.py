@@ -19,12 +19,15 @@ merged_dc = merged_dc.merge_cubes(FAPAR_anomaly_dc)
 # )
 
 udf_code = load_udf(os.path.join(os.path.dirname(__file__), "CDI_UDF.py"))
-CDI_dc = merged_dc.reduce_dimension(dimension="bands", reducer=PGNode(
-    process_id="run_udf",
-    data={"from_parameter": "data"},
-    udf=udf_code,
-    runtime="Python",
-))
+CDI_dc = merged_dc.reduce_dimension(
+    dimension="bands",
+    reducer=PGNode(
+        process_id="run_udf",
+        data={"from_parameter": "data"},
+        udf=udf_code,
+        runtime="Python",
+    ),
+)
 
 if __name__ == "__main__":
     year = 2021

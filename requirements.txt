@@ -1,0 +1,5 @@
+openeo
+geopandas
+numpy
+xarray
+GitPython

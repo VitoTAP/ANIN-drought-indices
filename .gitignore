@@ -6,5 +6,10 @@ dist
 __pycache__
 *.output*
 *.aux.xml
-*/.ipynb_checkpoints/
+*.ipynb_checkpoints/
 */out-*
+
+# Temp dirs and files
+temp/
+tmp/
+tmp*

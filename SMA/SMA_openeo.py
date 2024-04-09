@@ -3,31 +3,20 @@ from openeo_utils.utils import *
 
 connection = get_connection()
 
-# inspired on https://git.vito.be/users/lippenss/repos/workspace/browse/2023/PEOPLE/udp-reduce_temporal.ipynb
-SMA_dc = connection.load_disk_collection(
-    format="GTiff",
-    # TODO: Should fetch realtime data
-    # Data was manually imported from https://edo.jrc.ec.europa.eu/gdo/php/index.php?id=2112
-    glob_pattern="/data/users/Public/emile.sonneveld/SMA_layer/sma*_m_wld_*_t/sma*_m_wld_*_t.tif",
-    options=dict(date_regex=r".*_(\d{4})(\d{2})(\d{2})_t.tif"),
+temporal_extent = get_temporal_extent_from_argv(["2023-09-01", "2023-10-01"])
+
+SMA_dc = connection.load_stac(
+    url="/data/users/Public/emile.sonneveld/ANIN/SMA_openeo_cropped_v03/stac/v0.2/collection.json",
+    temporal_extent=temporal_extent,
+    spatial_extent=spatial_extent_south_africa,
+    bands=["SMA_openeo_cropped"],
 )
+
 SMA_dc = SMA_dc.aggregate_temporal_period("month", reducer="mean")
 SMA_dc = SMA_dc.rename_labels("bands", ["SMA"])
 
 if __name__ == "__main__":
-    year = 2021
-    start = f"{year}/01/01"
-    end = f"{year + 2}/01/01"  # Big time range
-    SMA_dc = SMA_dc.filter_temporal([start, end])
-    # SMA_dc = SMA_dc.filter_bbox(
-    #     west=10,
-    #     south=-40,
-    #     east=40,
-    #     north=-20,
-    # )
-    # TODO: Combining filter_bbox and filter_spatial can give stretching problems! Probably need to avoid load_disk_collection.
-
     geojson = load_south_africa_geojson()
     # geojson = load_johannesburg_geojson()
     SMA_dc = SMA_dc.filter_spatial(geojson)
-    custom_execute_batch(SMA_dc)
+    custom_execute_batch(SMA_dc)  # , run_type="sync"

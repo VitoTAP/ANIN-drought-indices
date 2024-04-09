@@ -7,7 +7,7 @@ __pycache__
 *.output*
 *.aux.xml
 *.ipynb_checkpoints/
-*/out-*
+out-*
 
 # Temp dirs and files
 temp/

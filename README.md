@@ -3,13 +3,12 @@
 ## Installation:
 
 ```bash
-git clone https://git-ext.gmv.com/anin-external/drought-indices.git
-cd drought-indices
-git checkout openeo
+git clone https://github.com/VitoTAP/ANIN-drought-indices
+cd ANIN-drought-indices
 python3 -m pip install -r requirements.txt
 ```
 
-To install on CONDA: `conda install -c conda-forge openeo`
+To install on CONDA: `conda install --yes --file requirements.txt`
 
 More instructions here: https://open-eo.github.io/openeo-python-client/installation.html
 

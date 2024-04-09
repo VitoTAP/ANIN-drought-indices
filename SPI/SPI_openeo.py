@@ -18,11 +18,12 @@ geojson = load_south_africa_geojson()
 ERA5_dc = ERA5_dc.filter_spatial(geojson)
 
 UDF_code = load_udf(os.path.join(os.path.dirname(__file__), "SPI_UDF.py"))
-SPI_dc = ERA5_dc.apply_dimension(dimension="t", code=UDF_code, runtime="Python")
+SPI_dc = ERA5_dc.apply_dimension(dimension="t", process=openeo.UDF(code=UDF_code, runtime="Python"))
 SPI_dc = SPI_dc.rename_labels("bands", ["SPI"])
 
 previous_month_UDF_code = load_udf(os.path.join(os.path.dirname(__file__), "previous_month_UDF.py"))
-SPI_previous_month_dc = SPI_dc.apply_dimension(dimension="t", code=previous_month_UDF_code, runtime="Python")
+previous_month_UDF = openeo.UDF(code=previous_month_UDF_code, runtime="Python")
+SPI_previous_month_dc = SPI_dc.apply_dimension(dimension="t", process=previous_month_UDF)
 SPI_previous_month_dc = SPI_previous_month_dc.rename_labels("bands", ["SPI_previous_month"])
 SPI_previous_month_dc = SPI_previous_month_dc.filter_temporal(temporal_extent)
 
@@ -44,4 +45,4 @@ def main(temporal_extent_argument):
 
 
 if __name__ == "__main__":
-    main(get_temporal_extent_from_argv(["2020-01-01", "2023-03-01"]))
+    main(get_temporal_extent_from_argv(["2022-01-01", "2022-03-01"]))

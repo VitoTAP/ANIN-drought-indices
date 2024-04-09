@@ -1,3 +1,5 @@
+import re
+
 import datetime
 import glob
 import json
@@ -60,11 +62,12 @@ spatial_extent_johannesburg = {  # Johannesburg
 
 def get_temporal_extent_from_argv(default):
     if len(sys.argv) >= 3:
-        ret = [sys.argv[1], sys.argv[2]]
-        print("Using time range arguments from arguments: " + repr(ret))
-        return ret
-    else:
-        return default
+        # check if arg is date:
+        if re.match(r"\d{4}-\d+-\d+", sys.argv[1]) and re.match(r"\d{4}-\d+-\d+", sys.argv[2]):
+            ret = [sys.argv[1], sys.argv[2]]
+            print("Using time range arguments from arguments: " + repr(ret))
+            return ret
+    return default
 
 
 def load_south_africa_shape() -> gpd.GeoDataFrame:
@@ -158,9 +161,11 @@ def custom_execute_batch(datacube, job_options=None, out_format="GTiff", run_typ
 
         parent_filename = inspect.stack()[1].filename  # HACK!
 
-        with open(parent_filename, "r") as file:
-            job_description = "now: `" + str(now) + "` url: <" + datacube.connection.root_url + ">\n\n"
-            job_description += "python code: \n\n\n```python\n" + file.read() + "```\n\n"
+        job_description = "now: `" + str(now) + "` url: <" + datacube.connection.root_url + ">\n\n"
+        interactive_python = "ipykernel" in parent_filename
+        if Path(parent_filename).exists():
+            with open(parent_filename, "r") as file:
+                job_description += "python code: \n\n\n```python\n" + file.read() + "```\n\n"
 
         try:
             from git import Repo  # pip install GitPython
@@ -170,11 +175,15 @@ def custom_execute_batch(datacube, job_options=None, out_format="GTiff", run_typ
             job_description += "GIT branch: `" + repo.active_branch.name + "` commit: `" + repo.active_branch.commit.hexsha + "`\n\n"
             job_description += "GIT changed files: " + ", ".join(map(lambda x: x.a_path, repo.index.diff(None))) + "\n"
         except Exception as e:
-            print("Could not attach GIT info: " + str(e))
+            if not interactive_python:
+                print("Could not attach GIT info: " + str(e))
 
-        output_dir = Path(
-            os.path.dirname(parent_filename),
-        ) / ("out-" + str(now).replace(":", "_").replace(" ", "_"))
+        if "drought-indices" in os.path.dirname(parent_filename):
+            output_dir = Path(os.path.dirname(parent_filename))
+        else:
+            output_dir = Path(os.getcwd())
+
+        output_dir = output_dir / ("out-" + str(now).replace(":", "_").replace(" ", "_"))
         output_dir.mkdir(parents=True, exist_ok=True)
         print("output_dir=" + str(output_dir))
         datacube.print_json(file=output_dir / "process_graph.json", indent=2)
@@ -209,6 +218,7 @@ def custom_execute_batch(datacube, job_options=None, out_format="GTiff", run_typ
         #     json.dump(job.logs(), f, indent=2)  # too often timeout
 
         # os.system('spd-say "Program terminated"')  # vocal feedback
+        return output_dir
     except KeyboardInterrupt:
         # No audio when user manually stops program
         pass

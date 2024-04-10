@@ -27,10 +27,17 @@ For every layer you can overwrite the temporal extent. For CDI it is required fo
 python3 -m CDI.CDI_openeo "2020-01-01" "2023-01-01"
 ```
 
+Checkout the notebook examples:
+```
+SPI/SPI_openeo.ipynb
+SMA/SMA_openeo.ipynb
+```
+
 ## Notes
 
 Format code:
 ```bash
 black --line-length 120 */*_openeo.py */*_UDF.py
 ```
-Example output files can be found here: https://gmvdrive.gmv.com/index.php/s/oLj4moSZ2Ez5G5P?path=%2F
+
+Example output files can be found here: https://vitoresearch-my.sharepoint.com/:f:/g/personal/emile_sonneveld_vito_be/EoYTLvl14rdCoH1WDKvKwygBGCZdhMNfTBxnaZFpImBzUQ?e=wJfq37

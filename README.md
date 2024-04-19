@@ -24,7 +24,11 @@ cd ANIN-drought-indices
 python -m pip install -r requirements.txt
 ```
 
-To install on CONDA: `conda install --yes --file requirements.txt`
+To install on CONDA: 
+```bash
+conda config --append channels conda-forge
+conda install --yes --file requirements.txt
+```
 
 More instructions here: https://open-eo.github.io/openeo-python-client/installation.html
 

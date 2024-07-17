@@ -3,3 +3,6 @@ geopandas
 numpy
 xarray
 GitPython
+jupyter
+rasterio
+matplotlib

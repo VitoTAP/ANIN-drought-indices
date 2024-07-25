@@ -16,7 +16,7 @@ Register for openeo: https://docs.openeo.cloud/join/free_trial.html
 A free account should be more than enough. if it does not suffice, there are many credits available for this project. 
 Ask emile.sonneveld@vito.be to link them to your account.
 
-[Example output files can be found here](https://vitoresearch-my.sharepoint.com/:f:/g/personal/emile_sonneveld_vito_be/EoYTLvl14rdCoH1WDKvKwygBGCZdhMNfTBxnaZFpImBzUQ?e=wJfq37) If the link expired let me know.
+[Example output files can be found on artifactory](https://artifactory.vgt.vito.be/artifactory/auxdata-public/ANIN/).
 
 ```bash
 git clone https://github.com/VitoTAP/ANIN-drought-indices

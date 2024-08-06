@@ -44,7 +44,7 @@ python -m FAPAR_Anomaly.FAPAR_Anomaly_openeo
 
 For every layer you can overwrite the temporal extent. For CDI it is required for performance:
 ```bash
-python -m CDI.CDI_openeo "2020-01-01" "2023-01-01"
+python -m CDI.CDI_openeo "2001-01-01" "2023-01-01"
 ```
 
 Checkout the notebook examples:

@@ -5,7 +5,8 @@ from SMA.SMA_openeo import SMA_dc
 from SPI.SPI_openeo import SPI_dc, SPI_previous_month_dc
 from openeo_utils.utils import *
 
-temporal_extent = get_temporal_extent_from_argv(["2023-08-01", "2023-09-01"])
+# Long time range can take long time to calculate
+temporal_extent = get_temporal_extent_from_argv(["2001-01-01", "2023-09-01"])
 
 resolution = 0.00297619047619  # 300m in degrees
 SPI_dc = SPI_dc.filter_temporal(temporal_extent)
@@ -54,8 +55,8 @@ def main(temporal_extent_argument):
 
 
 if __name__ == "__main__":
-    # job = openeo.rest.job.BatchJob(job_id=f"vito-j-2404082abce44e9b922cb3736b0fcce4", connection=connection)  # CDI
-    # output_dir = "/home/emile/openeo/drought-indices/CDI/out-test2/"
+    # job = openeo.rest.job.BatchJob(job_id=f"vito-j-240805eebc104391ad007d9601d9fd65", connection=connection)  # CDI
+    # output_dir = "/home/emile/openeo/ANIN-drought-indices/CDI/out-2024-08-06_00_58_11.723235"
     # job.get_results().download_files(output_dir)
     if len(sys.argv) < 3:
         raise Exception("Please provide start and end date as arguments")

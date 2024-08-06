@@ -31,8 +31,8 @@ MODIS_dc = connection.load_stac(
     temporal_extent=temporal_extent,
 )
 
-MODIS_MIN_dc = MODIS_dc.band("NDVI_MIN")
-MODIS_MAX_dc = MODIS_dc.band("NDVI_MAX")
+MODIS_MIN_dc = MODIS_dc.band("NDVI_MIN") * 1.0
+MODIS_MAX_dc = MODIS_dc.band("NDVI_MAX") * 1.0
 
 VCI_dc = (CGLS_NDVI300_V2_GLOBAL_dc - MODIS_MIN_dc) / (MODIS_MAX_dc - MODIS_MIN_dc)
 VCI_dc = VCI_dc.mask(phenology_mask)
@@ -49,4 +49,4 @@ def main(temporal_extent_argument):
 
 
 if __name__ == "__main__":
-    main(get_temporal_extent_from_argv(["2020-07-01", "2023-05-01"]))
+    main(get_temporal_extent_from_argv(["2020-07-01", "2024-07-01"]))

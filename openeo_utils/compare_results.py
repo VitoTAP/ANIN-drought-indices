@@ -1,7 +1,8 @@
 import glob
 import os
 
-del os.environ["GDAL_DATA"]  # Clear so that GDAL_DATA from package is used
+if "GDAL_DATA" in os.environ:
+    del os.environ["GDAL_DATA"]  # Clear so that GDAL_DATA from package is used
 
 # import numpy as np
 import xarray as xr
@@ -156,8 +157,10 @@ arrOEO = arrOEO.rio.reproject_match(arrGMV)
 arrOEO = arrOEO.values.ravel()
 arrGMV = arrGMV.values.ravel()
 
+quite_nan = float.fromhex('0x1.fffffe0000000p+127')  # quiet NaN (NANQ) ~3.40282e+38
 missing_value = -32767
-mask = np.isnan(arrOEO) | (arrOEO == missing_value) | np.isnan(arrGMV) | (arrGMV == missing_value)
+mask = (np.isnan(arrOEO) | (arrOEO == quite_nan) | (arrOEO == missing_value)
+        | np.isnan(arrGMV) | (arrGMV == quite_nan) | (arrGMV == missing_value))
 # remove all elements using mask:
 arrOEO = arrOEO[~mask]
 arrGMV = arrGMV[~mask]

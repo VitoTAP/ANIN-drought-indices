@@ -1,15 +1,16 @@
-import re
-
 import datetime
 import glob
 import json
 import os
+import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 import geopandas as gpd
 import openeo
 import requests
+from dateutil.relativedelta import relativedelta
 
 # Emile: Sometimes python hangs on IPv6 requests.
 requests.packages.urllib3.util.connection.HAS_IPV6 = False
@@ -32,16 +33,36 @@ def get_connection():
     return connection
 
 
-def assert_glob_ok(glob_pattern: str):
+def assert_glob_ok(glob_pattern: str, date_regex: Optional[str] = None):
     if glob_pattern.startswith("/data/") or glob_pattern.startswith("/dataCOPY/"):
         if os.path.exists("/dataCOPY/"):
             glob_pattern = glob_pattern.replace("/data/", "/dataCOPY/")
-            # star_index = glob_pattern.find("*")
-            # slash_index = glob_pattern.rfind("/", 0, star_index)
-            glob_test = glob.glob(glob_pattern)
-            if not glob_test:
+        star_index = glob_pattern.find("*")
+        slash_index = glob_pattern.rfind("/", 0, star_index)
+        base_path = glob_pattern[0: slash_index]
+        if os.path.exists(base_path):
+            glob_test = glob.iglob(glob_pattern)
+            if not next(glob_test, False):
                 raise Exception("glob_pattern not found: " + glob_pattern)
-            return True
+            if date_regex:
+                def extract_date(s):
+                    tup = re.match(date_regex, s).groups()
+                    # Always use the first of the month
+                    return datetime.date(int(tup[0]), int(tup[1]), 1)
+
+                glob_test = list(glob_test)
+                dates = sorted(list(set(map(extract_date, glob_test))))
+                min_date = min(dates)
+                max_date = max(dates)
+
+                months_difference = (max_date.year - min_date.year) * 12 + max_date.month - min_date.month
+                missing_months = []
+                for m in range(months_difference + 1):
+                    expected_date = min_date + relativedelta(months=m)
+                    if expected_date not in dates:
+                        missing_months.append(expected_date)
+                if missing_months:
+                    raise Exception("Missing date(s): " + repr(missing_months))
     print("Could not verify GLOB pattern: " + glob_pattern)
 
 

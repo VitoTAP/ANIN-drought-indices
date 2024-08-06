@@ -1,0 +1,34 @@
+{
+  "collection_id": "SMA",
+  "title": "SMA",
+  "description": "SMA",
+  "instruments": [],
+  "keywords": [],
+  "mission": [],
+  "platform": [],
+  "providers": [
+  ],
+  "layout_strategy_item_template": "${collection}",
+  "input_path_parser": {
+    "classname": "DefaultInputPathParser",
+    "parameters": {
+      "regex_pattern": ".*(?P<asset_type>openEO).*_(?P<year>\\d{4})-(?P<month>\\d{2})-(?P<day>\\d{2})Z?\\.tif$",
+      "period": "monthly"
+    }
+  },
+  "item_assets": {
+    "openEO": {
+      "title": "SMA",
+      "description": "SMA",
+      "eo_bands": [
+        {
+          "name": "SMA",
+          "description": "SMA",
+          "data_type": "float32",
+          "sampling": "area"
+        }
+      ]
+    }
+  },
+  "overrides": {}
+}

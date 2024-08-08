@@ -50,7 +50,7 @@ def assert_glob_ok(glob_pattern: str, date_regex: Optional[str] = None):
                     # Always use the first of the month
                     return datetime.date(int(tup[0]), int(tup[1]), 1)
 
-                glob_test = list(glob_test)
+                glob_test = list(glob.iglob(glob_pattern))
                 dates = sorted(list(set(map(extract_date, glob_test))))
                 min_date = min(dates)
                 max_date = max(dates)
@@ -63,6 +63,8 @@ def assert_glob_ok(glob_pattern: str, date_regex: Optional[str] = None):
                         missing_months.append(expected_date)
                 if missing_months:
                     raise Exception("Missing date(s): " + repr(missing_months))
+                print(f"Dates OK! {min_date=} {max_date=} {len(glob_test)=}")
+                return
     print("Could not verify GLOB pattern: " + glob_pattern)
 
 
@@ -145,6 +147,24 @@ def load_south_africa_geojson():
 def load_johannesburg_geojson():
     with open(containing_folder / "johannesburg.json") as f:
         return json.load(f)
+
+
+def get_era5land_band_johan(era5land_name):
+    if isinstance(era5land_name, list):
+        raise Exception("Not implemented")
+    assert era5land_name is not None
+    glob_pattern = f"/data/users/Public/emile.sonneveld/ANIN/johan/reanalysis-era5-land_southafrica_float32/*/reanalysis-era5-land_{era5land_name}_*.tif"
+    date_regex = r".*_(\d{4})(\d{2})(\d{2}).tif"
+    assert_glob_ok(glob_pattern, date_regex)
+
+    tmp = connection.load_disk_collection(
+        format="GTiff",
+        glob_pattern=glob_pattern,
+        options=dict(date_regex=date_regex),
+    )
+    tmp._pg.arguments["featureflags"] = {"tilesize": 1}
+    load_collection = tmp.rename_labels("bands", [era5land_name]) * 1.0
+    return load_collection
 
 
 def load_udf(udf):

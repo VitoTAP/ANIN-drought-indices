@@ -63,7 +63,7 @@ def assert_glob_ok(glob_pattern: str, date_regex: Optional[str] = None):
                         missing_months.append(expected_date)
                 if missing_months:
                     raise Exception("Missing date(s): " + repr(missing_months))
-                print(f"Dates OK! {min_date=} {max_date=} {len(glob_test)=}")
+                print(f"Dates OK! min_date:{min_date} max_date:{max_date} days:{len(glob_test)}")
                 return
     print("Could not verify GLOB pattern: " + glob_pattern)
 

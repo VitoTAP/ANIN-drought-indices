@@ -44,8 +44,11 @@ VCI_dc = VCI_dc.filter_spatial(geojson)
 
 def main(temporal_extent_argument):
     global VCI_dc
-    VCI_dc = VCI_dc.filter_temporal(temporal_extent_argument)
-    custom_execute_batch(VCI_dc, job_options=heavy_job_options)  # , out_format="NetCDF", run_type="sync")
+    dc = VCI_dc.filter_temporal(temporal_extent_argument)
+    out_format = get_out_format_from_argv("GTiff")
+    if out_format.lower() == "csv":
+        dc = dc.aggregate_spatial(load_south_africa_secondary_catchment_geojson(), reducer="mean")
+    custom_execute_batch(dc, job_options=heavy_job_options, out_format=out_format)
 
 
 if __name__ == "__main__":

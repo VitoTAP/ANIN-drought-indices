@@ -18,5 +18,8 @@ SMA_dc = SMA_dc.rename_labels("bands", ["SMA"])
 if __name__ == "__main__":
     geojson = load_south_africa_geojson()
     # geojson = load_johannesburg_geojson()
-    SMA_dc = SMA_dc.filter_spatial(geojson)
-    custom_execute_batch(SMA_dc)  # , run_type="sync"
+    dc = SMA_dc.filter_spatial(geojson)
+    out_format = get_out_format_from_argv("GTiff")
+    if out_format.lower() == "csv":
+        dc = dc.aggregate_spatial(load_south_africa_secondary_catchment_geojson(), reducer="mean")
+    custom_execute_batch(dc, out_format=out_format)

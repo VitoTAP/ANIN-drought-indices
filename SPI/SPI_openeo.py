@@ -55,12 +55,12 @@ SPI_dc = SPI_dc.filter_temporal(temporal_extent)
 def main(temporal_extent_argument):
     dc = SPI_dc
     dc = dc.filter_temporal(temporal_extent_argument)
-    resolution = 0.00297619047619  # 300m in degrees
+    # resolution = 0.00297619047619  # 300m in degrees
     # dc = dc.resample_spatial(resolution=resolution, projection=4326, method="bilinear")
 
-    # out_format = "NetCDF"
-    out_format = "GTiff"
-    dc = dc.save_result(format=out_format)
+    out_format = get_out_format_from_argv("GTiff")
+    if out_format.lower() == "csv":
+        dc = dc.aggregate_spatial(load_south_africa_secondary_catchment_geojson(), reducer="mean")
     custom_execute_batch(dc, job_options=heavy_job_options, out_format=out_format)
     # custom_execute_batch(ERA5_dc, out_format="netCDF")
 

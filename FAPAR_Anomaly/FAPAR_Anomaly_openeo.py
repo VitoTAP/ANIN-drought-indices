@@ -64,13 +64,12 @@ def main(temporal_extent_argument):
 
     geojson = load_south_africa_geojson()
     # geojson = load_johannesburg_geojson()  # For faster debugging
-    FAPAR_anomaly_dc = FAPAR_anomaly_dc.filter_spatial(geojson)
+    dc = FAPAR_anomaly_dc.filter_spatial(geojson)
 
-    # out_format = "NetCDF"
-    out_format = "GTiff"
-    dc = FAPAR_anomaly_dc
-    dc = dc.save_result(format=out_format)
-    custom_execute_batch(dc, out_format=out_format, run_type="batch_job")
+    out_format = get_out_format_from_argv("GTiff")
+    if out_format.lower() == "csv":
+        dc = dc.aggregate_spatial(load_south_africa_secondary_catchment_geojson(), reducer="mean")
+    custom_execute_batch(dc, out_format=out_format)
     # custom_execute_batch(CGLS_FAPAR300_V1_GLOBAL_dc, out_format=out_format, run_type="batch_job")
 
 

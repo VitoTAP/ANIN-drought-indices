@@ -93,6 +93,16 @@ def get_temporal_extent_from_argv(default):
     return default
 
 
+def get_out_format_from_argv(default):
+    for arg in sys.argv:
+        flag = "--out_format="
+        if arg.startswith(flag):
+            val = arg[len(flag):]
+            print("Using out_format from arguments: " + repr(val))
+            return val
+    return default
+
+
 def load_south_africa_shape() -> gpd.GeoDataFrame:
     """
     This can be used as a mask
@@ -147,6 +157,23 @@ def load_south_africa_geojson():
 def load_johannesburg_geojson():
     with open(containing_folder / "johannesburg.json") as f:
         return json.load(f)
+
+
+def load_south_africa_secondary_catchment_geojson() -> gpd.GeoDataFrame:
+    shape_df = gpd.read_file(containing_folder / "shape_secondary_catchment/Secondary Catchment.shp")
+
+    # simplify shape_df while keeping all properties:
+    for index, row in shape_df.iterrows():
+        row['geometry'] = row['geometry'].simplify(0.011)
+        shape_df.at[index, 'geometry'] = row['geometry']
+
+    geojson = json.loads(shape_df.to_json())
+
+    # Dump the json for easy debugging:
+    with open(containing_folder / "shape_secondary_catchment/tmp_secondary_catchment.json", "w") as f:
+        json.dump(geojson, f, indent=2)
+
+    return geojson
 
 
 def get_era5land_band_johan(era5land_name):
@@ -234,8 +261,6 @@ def custom_execute_batch(datacube, job_options=None, out_format="GTiff", run_typ
         elif run_type == "batch_job":
             if job_options is None:
                 job_options = dict()
-            if "filename_prefix" not in job_options:
-                job_options["filename_prefix"] = os.path.basename(parent_filename).replace(".py", "")
 
             job = datacube.create_job(
                 title=os.path.basename(parent_filename),
@@ -284,6 +309,6 @@ def download_existing_job(job_id: str, conn: "openeo.Connection"):
 
 if __name__ == "__main__":
     # For testing
-    load_south_africa_shape()
+    load_south_africa_secondary_catchment_geojson()
     # get_connection()
     # custom_execute_batch(None)

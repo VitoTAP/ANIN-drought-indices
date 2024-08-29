@@ -45,12 +45,13 @@ CDI_dc = CDI_dc.filter_spatial(geojson)
 
 def main(temporal_extent_argument):
     global CDI_dc
-    CDI_dc = CDI_dc.filter_temporal(temporal_extent_argument)
+    dc = CDI_dc.filter_temporal(temporal_extent_argument)
+    dc = dc.filter_spatial(geojson)
 
-    # out_format = "NetCDF"
-    out_format = "GTiff"
-    CDI_dc = CDI_dc.save_result(format=out_format)
-    custom_execute_batch(CDI_dc, job_options=heavy_job_options, out_format=out_format)  # , run_type="sync"
+    out_format = get_out_format_from_argv("GTiff")
+    if out_format.lower() == "csv":
+        dc = dc.aggregate_spatial(load_south_africa_secondary_catchment_geojson(), reducer="mean")
+    custom_execute_batch(dc, job_options=heavy_job_options, out_format=out_format)
     # custom_execute_batch(merged_dc, out_format="netcdf",job_options=heavy_job_options)
 
 
@@ -58,6 +59,8 @@ if __name__ == "__main__":
     # job = openeo.rest.job.BatchJob(job_id=f"vito-j-240805eebc104391ad007d9601d9fd65", connection=connection)  # CDI
     # output_dir = "/home/emile/openeo/ANIN-drought-indices/CDI/out-2024-08-06_00_58_11.723235"
     # job.get_results().download_files(output_dir)
+    # import sys
+    # sys.argv = ["CDI/CDI_openeo.py", "2001-01-01", "2024-01-01", "--out_format=CSV"]
     if len(sys.argv) < 3:
         raise Exception("Please provide start and end date as arguments")
     main(temporal_extent)

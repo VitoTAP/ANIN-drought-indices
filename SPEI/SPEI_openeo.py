@@ -180,9 +180,12 @@ SPEI_dc = SPEI_dc.rename_labels("bands", ["SPEI"])
 
 def main(temporal_extent_argument):
     global SPEI_dc
-    SPEI_dc = SPEI_dc.filter_temporal(temporal_extent_argument)
-    custom_execute_batch(SPEI_dc, job_options=heavy_job_options)
-    # custom_execute_batch(ERA5_dc, out_format="netcdf")
+    dc = SPEI_dc.filter_temporal(temporal_extent_argument)
+
+    out_format = get_out_format_from_argv("GTiff")
+    if out_format.lower() == "csv":
+        dc = dc.aggregate_spatial(load_south_africa_secondary_catchment_geojson(), reducer="mean")
+    custom_execute_batch(dc, job_options=heavy_job_options, out_format=out_format)
 
 
 if __name__ == "__main__":

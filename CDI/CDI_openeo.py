@@ -37,7 +37,7 @@ CDI_dc = merged_dc.reduce_dimension(
         runtime="Python",
     ),
 )
-CDI_dc = CDI_dc.rename_labels("bands", ["CDI"])
+CDI_dc = CDI_dc.add_dimension("bands", "CDI", type="bands")
 
 geojson = load_south_africa_geojson()
 # geojson = load_johannesburg_geojson()

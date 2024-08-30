@@ -164,8 +164,7 @@ def load_south_africa_secondary_catchment_geojson() -> gpd.GeoDataFrame:
 
     # simplify shape_df while keeping all properties:
     for index, row in shape_df.iterrows():
-        row['geometry'] = row['geometry'].simplify(0.011)
-        shape_df.at[index, 'geometry'] = row['geometry']
+        shape_df.at[index, 'geometry'] = row['geometry'].simplify(0.011)
 
     geojson = json.loads(shape_df.to_json())
 

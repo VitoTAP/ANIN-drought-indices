@@ -35,6 +35,7 @@ MODIS_MIN_dc = MODIS_dc.band("NDVI_MIN") * 1.0
 MODIS_MAX_dc = MODIS_dc.band("NDVI_MAX") * 1.0
 
 VCI_dc = (CGLS_NDVI300_V2_GLOBAL_dc - MODIS_MIN_dc) / (MODIS_MAX_dc - MODIS_MIN_dc)
+VCI_dc = VCI_dc.rename_labels("bands", ["VCI"])
 VCI_dc = VCI_dc.mask(phenology_mask)
 
 geojson = load_south_africa_geojson()

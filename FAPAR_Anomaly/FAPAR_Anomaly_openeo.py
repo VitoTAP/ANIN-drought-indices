@@ -9,7 +9,7 @@ temporal_extent = get_temporal_extent_from_argv(["2020-01-01", "2023-09-01"])
 band = "FAPAR"
 # scale_factor = 0.004 Not needed
 lc = connection.load_collection(
-    "CGLS_FAPAR300_V1_GLOBAL",  # 300m resolution, [2014,present]
+    "CGLS_FAPAR300_V1_GLOBAL",  # 300m resolution, [2014,present] (Real time data takes around 2 months to be available)
     temporal_extent=temporal_extent,
     spatial_extent=spatial_extent,
     bands=[band],

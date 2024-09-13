@@ -8,7 +8,7 @@ temporal_extent = ["2020-07-01", None]
 spatial_extent = spatial_extent_south_africa
 
 CGLS_NDVI300_V2_GLOBAL_dc = connection.load_collection(
-    "CGLS_NDVI300_V2_GLOBAL",  # 300m resolution, [2020, present]
+    "CGLS_NDVI300_V2_GLOBAL",  # 300m resolution, [2020, present] (Real time data takes around 1 month to be available)
     temporal_extent=temporal_extent,
     # To avoid "No spatial filter could be derived to load this collection"
     spatial_extent=spatial_extent,

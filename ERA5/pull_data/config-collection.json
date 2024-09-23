@@ -1,0 +1,34 @@
+{
+  "collection_id": "total_precipitation",
+  "title": "total_precipitation",
+  "description": "total_precipitation",
+  "instruments": [],
+  "keywords": [],
+  "mission": [],
+  "platform": [],
+  "providers": [
+  ],
+  "layout_strategy_item_template": "${collection}",
+  "input_path_parser": {
+    "classname": "DefaultInputPathParser",
+    "parameters": {
+      "regex_pattern": ".*(?P<year>\\d{4})-(?P<month>\\d{2})-(?P<day>\\d{2})Z?_(?P<asset_type>total_precipitation)\\.tiff?$",
+      "period": "monthly"
+    }
+  },
+  "item_assets": {
+    "total_precipitation": {
+      "title": "total_precipitation",
+      "description": "total_precipitation",
+      "eo_bands": [
+        {
+          "name": "total_precipitation",
+          "description": "total_precipitation",
+          "data_type": "float32",
+          "sampling": "area"
+        }
+      ]
+    }
+  },
+  "overrides": {}
+}

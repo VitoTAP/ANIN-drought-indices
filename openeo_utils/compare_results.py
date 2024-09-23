@@ -1,5 +1,10 @@
 import glob
 import os
+import tempfile
+import uuid
+from pathlib import Path
+
+import xarray
 
 if "GDAL_DATA" in os.environ:
     del os.environ["GDAL_DATA"]  # Clear so that GDAL_DATA from package is used
@@ -124,18 +129,39 @@ def MSE(a, b):
 # tiff_path_gmv = "/home/emile/Desktop/ToShareWithVito/SPI/outputs/nc_to_tiffs/2022-01-01_.tiff"
 # tiff_path_oeo = "/home/emile/openeo/drought-indices/SPI/out-2024-02-21_22_40_39.195282/openEO_2022-01-01Z.tif"
 
-# tiff_path_gmv = "/home/emile/Desktop/ToShareWithVito/SPI/outputs/nc_to_tiffs/2020-01-01_.tiff"
-# tiff_path_oeo = "/home/emile/openeo/drought-indices/SPI/out-2024-02-21_22_40_39.195282/openEO_2020-01-01Z.tif"
+# tiff_path_gmv = "/home/emile/Downloads/SPI_example_output_from_OpenEO_v03/openEO_2020-01-01Z.tif"
+# tiff_path_oeo = "/home/emile/openeo/ANIN-drought-indices/SPI/out-2024-09-23_18_59_10.893159/openEO_2020-01-01Z.tif"
 
-tiff_path_gmv = "/home/emile/Desktop/ToShareWithVito/CDI/Sample output/2021-09-01_CDI.tif"
-tiff_path_oeo = "/home/emile/openeo/drought-indices/CDI/out-2024-04-03_17_42_51.706013/openEO_2021-09-01Z.tif"
+tiff_path_gmv = "/home/emile/Downloads/SMA_example_output_from_OpenEO/SMA_openeo_2021-01-01Z.tif"
+tiff_path_oeo = "/home/emile/openeo/ANIN-drought-indices/SMA/out-2024-09-23_18_29_36.709627/openEO_2021-01-01Z.tif"
+
+# tiff_path_gmv = "/home/emile/Desktop/ToShareWithVito/CDI/Sample output/2021-09-01_CDI.tif"
+# tiff_path_oeo = "/home/emile/openeo/drought-indices/CDI/out-2024-04-03_17_42_51.706013/openEO_2021-09-01Z.tif"
+
+# tiff_path_gmv = "/data/users/Public/emile.sonneveld/ERA5-Land-monthly-averaged-data-ANIN/tiff_collection/2020/01/01/2020-01-01_tp.tif"
+# tiff_path_oeo = "/data/users/Public/emile.sonneveld/ERA5-Land-monthly-averaged-data-v4/tiff_collection/2020/01/01/2020-01-01_total_precipitation.tiff"
 
 print(f"{tiff_path_gmv=}")
 print(f"{tiff_path_oeo=}")
 
+
+def flatten(input_path):
+    unique = uuid.uuid4()
+    assert Path(input_path).exists(), f"{input_path} does not exist"
+    # Avoid "ValueError: conflicting sizes for dimension 'time': length 1 on the data but length 519 on coordinate 'time'":
+    cmd = f"gdal_translate -co COMPRESS=DEFLATE -co QUALITY=1 -mo NETCDF_DIM_EXTRA= -mo NETCDF_DIM_time_DEF= -mo NETCDF_DIM_time_VALUES= {input_path} {unique}_tmp1.tiff"
+    os.system(cmd)
+    cmd = f"gdalwarp -t_srs EPSG:4326 {unique}_tmp1.tiff {unique}_tmp2.tiff"
+    os.system(cmd)
+    os.remove(f"{unique}_tmp1.tiff")
+    return f"{unique}_tmp2.tiff"
+
+
 # Avoid 'DataArray' object has no attribute 'set_close' by changing the code in the open_rasterio method
-arrGMV = rioxarray.open_rasterio(tiff_path_gmv)
-arrOEO = rioxarray.open_rasterio(tiff_path_oeo)
+arrGMV = rioxarray.open_rasterio(flatten(tiff_path_gmv))
+arrOEO = rioxarray.open_rasterio(flatten(tiff_path_oeo))
+
+
 
 # scale_factor_GMV = arrGMV.attrs[band_struct["gmv_name"] + "_scale_factor"]
 # add_offset_GMV = arrGMV.attrs[band_struct["gmv_name"] + "_add_offset"]
@@ -168,6 +194,9 @@ arrGMV = arrGMV[~mask]
 # When taking more than 172480 elements, numpy mean will return inf
 # arrOEO = arrOEO[:111000]
 # arrGMV = arrGMV[:111000]
+
+m, b = np.polyfit(arrOEO, arrGMV, 1)
+print(f"y = {m} * x + {b}")
 
 print(f"{MSE(arrOEO, arrGMV)=}")
 print(f"{np.linalg.norm(arrOEO-arrGMV)=}")

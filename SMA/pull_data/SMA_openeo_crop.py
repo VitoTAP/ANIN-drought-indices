@@ -25,16 +25,14 @@ if __name__ == "__main__":
     import subprocess
 
     start = f"2001-01-01"
-    end = f"2024-02-01"
+    end = f"2024-07-01"
     SMA_dc = SMA_dc.filter_temporal([start, end])
-    resolution = 0.00297619047619  # 300m in degrees
-    SMA_dc = SMA_dc.resample_spatial(resolution=resolution, projection=4326, method="bilinear")
 
     geojson = load_south_africa_geojson()
     # geojson = load_johannesburg_geojson()
     SMA_dc = SMA_dc.filter_spatial(geojson)
     output_dir = custom_execute_batch(SMA_dc, heavy_job_options)
-    terrascope_dir = "/data/users/Public/emile.sonneveld/ANIN/SMA_openeo_cropped_v04/"
+    terrascope_dir = "/data/users/Public/emile.sonneveld/ANIN/SMA_openeo_cropped_v05/"
     # copy content of output_dir to terrascope_dir:
     subprocess.call(f"rsync -av --delete --no-perms --no-owner --no-group {output_dir} {terrascope_dir}".split())
     import SMA_stac_catalog_builder

@@ -6,7 +6,7 @@ connection = get_connection()
 temporal_extent = get_temporal_extent_from_argv(["2001-01-01", "2024-07-01"])
 
 SMA_dc = connection.load_stac(
-    url="/data/users/Public/emile.sonneveld/ANIN/SMA_openeo_cropped_v04_stac/collection.json",
+    url="/data/users/Public/emile.sonneveld/ANIN/SMA_openeo_cropped_v05_stac/collection.json",
     temporal_extent=temporal_extent,
     spatial_extent=spatial_extent_south_africa,
     bands=["SMA"],

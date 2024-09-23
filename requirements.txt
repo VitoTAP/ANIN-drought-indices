@@ -6,3 +6,4 @@ GitPython
 jupyter
 rasterio
 matplotlib
+pyqt5

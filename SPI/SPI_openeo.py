@@ -6,25 +6,14 @@ spatial_extent = spatial_extent_south_africa
 
 use_experimental_era5 = False
 if use_experimental_era5:
-    temporal_extent = ["1980-01-01", "2024-01-01"]
-    glob_pattern = (
-        "/data/users/Public/emile.sonneveld/ERA5-Land-monthly-averaged-data-v3/tiff_collection/*/*/*/*_total_precipitation.tiff"
+    temporal_extent = ["1980-01-01", "2024-06-01"]
+    load_collection = connection.load_stac(
+        url="/data/users/Public/emile.sonneveld/ERA5-Land-monthly-averaged-data-v4/stac/collection.json",
+        temporal_extent=temporal_extent,
+        spatial_extent=spatial_extent,
+        bands=["total_precipitation"],
     )
-    date_regex = r".*tiff_collection/(\d{4})/(\d{2})/(\d{2})/.*"
-    assert_glob_ok(glob_pattern, date_regex)
-
-    load_collection = connection.load_disk_collection(
-        format="GTiff",
-        # Based on https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land-monthly-means
-        glob_pattern=glob_pattern,
-        options=dict(date_regex=date_regex),
-    )
-    load_collection._pg.arguments["featureflags"] = {"tilesize": 16}
-    ERA5_dc = load_collection.rename_labels(
-        "bands", ["total_precipitation"]
-    ) * 1.0
-    ERA5_dc = (ERA5_dc + 3.277e+4) / 4.585e+6  # found with linear regression
-    ERA5_dc = ERA5_dc.filter_temporal(temporal_extent)
+    ERA5_dc = load_collection
 else:
     temporal_extent = ["1980-01-01", "2023-03-01"]
     load_collection = connection.load_stac(

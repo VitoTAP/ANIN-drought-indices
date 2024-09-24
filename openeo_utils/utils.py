@@ -93,6 +93,29 @@ def get_temporal_extent_from_argv(default):
     return default
 
 
+def smart_bool(value):
+    """
+    Convert given value to a boolean value, like `bool()` builtin,
+    but in case of strings: interpret some common cases as `False`:
+    "0", "no", "off", "false", ...
+    """
+    if isinstance(value, str) and value.lower() in ["0", "no", "off", "false"]:
+        return False
+    else:
+        return bool(value)
+
+
+def get_experimental_from_argv(default):
+    for arg in sys.argv:
+        flag = "--experimental="
+        if arg.startswith(flag):
+            val = arg[len(flag):]
+            val = smart_bool(val)
+            print("Using experimental from arguments: " + repr(val))
+            return val
+    return default
+
+
 def get_out_format_from_argv(default):
     for arg in sys.argv:
         flag = "--out_format="

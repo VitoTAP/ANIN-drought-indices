@@ -36,7 +36,7 @@ More instructions here: https://open-eo.github.io/openeo-python-client/installat
 
 ```bash
 python -m SMA.SMA_openeo --out_format=CSV
-python -m SPI.SPI_openeo --out_format=CSV
+python -m SPI.SPI_openeo --out_format=CSV --experimental=true
 python -m SPEI.SPEI_openeo --out_format=CSV
 python -m VCI.VCI_openeo --out_format=CSV
 python -m FAPAR_Anomaly.FAPAR_Anomaly_openeo --out_format=CSV
@@ -45,6 +45,11 @@ python -m FAPAR_Anomaly.FAPAR_Anomaly_openeo --out_format=CSV
 For every layer you can overwrite the temporal extent. For CDI it is required for performance:
 ```bash
 python -m CDI.CDI_openeo "2001-01-01" "2023-01-01" --out_format=CSV
+```
+
+SPI and CDI now has a larger temporal extent. To use the old version, use `--experimental=false`:
+```bash
+python -m SPI.SPI_openeo --out_format=CSV --experimental=false
 ```
 
 Checkout the notebook examples:

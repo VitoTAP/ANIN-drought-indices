@@ -4,7 +4,7 @@ from openeo_utils.utils import *
 connection = get_connection()
 spatial_extent = spatial_extent_south_africa
 
-use_experimental_era5 = False
+use_experimental_era5 = get_experimental_from_argv(default=True)
 if use_experimental_era5:
     temporal_extent = ["1980-01-01", "2024-06-01"]
     load_collection = connection.load_stac(

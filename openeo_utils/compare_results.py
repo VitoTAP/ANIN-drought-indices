@@ -129,11 +129,11 @@ def MSE(a, b):
 # tiff_path_gmv = "/home/emile/Desktop/ToShareWithVito/SPI/outputs/nc_to_tiffs/2022-01-01_.tiff"
 # tiff_path_oeo = "/home/emile/openeo/drought-indices/SPI/out-2024-02-21_22_40_39.195282/openEO_2022-01-01Z.tif"
 
-# tiff_path_gmv = "/home/emile/Downloads/SPI_example_output_from_OpenEO_v03/openEO_2020-01-01Z.tif"
-# tiff_path_oeo = "/home/emile/openeo/ANIN-drought-indices/SPI/out-2024-09-23_18_59_10.893159/openEO_2020-01-01Z.tif"
+tiff_path_gmv = "/home/emile/Downloads/SPI_example_output_from_OpenEO_v03/openEO_2022-06-01Z.tif"
+tiff_path_oeo = "/home/emile/Downloads/SPI_example_output_from_OpenEO_v04/openEO_2022-06-01Z.tif"
 
-tiff_path_gmv = "/home/emile/Downloads/SMA_example_output_from_OpenEO/SMA_openeo_2021-01-01Z.tif"
-tiff_path_oeo = "/home/emile/openeo/ANIN-drought-indices/SMA/out-2024-09-23_18_29_36.709627/openEO_2021-01-01Z.tif"
+# tiff_path_gmv = "/home/emile/Downloads/SMA_example_output_from_OpenEO/SMA_openeo_2021-01-01Z.tif"
+# tiff_path_oeo = "/home/emile/openeo/ANIN-drought-indices/SMA/out-2024-09-23_18_29_36.709627/openEO_2021-01-01Z.tif"
 
 # tiff_path_gmv = "/home/emile/Desktop/ToShareWithVito/CDI/Sample output/2021-09-01_CDI.tif"
 # tiff_path_oeo = "/home/emile/openeo/drought-indices/CDI/out-2024-04-03_17_42_51.706013/openEO_2021-09-01Z.tif"
@@ -146,15 +146,15 @@ print(f"{tiff_path_oeo=}")
 
 
 def flatten(input_path):
-    unique = uuid.uuid4()
+    unique = f"tmp_{uuid.uuid4()}"
     assert Path(input_path).exists(), f"{input_path} does not exist"
     # Avoid "ValueError: conflicting sizes for dimension 'time': length 1 on the data but length 519 on coordinate 'time'":
-    cmd = f"gdal_translate -co COMPRESS=DEFLATE -co QUALITY=1 -mo NETCDF_DIM_EXTRA= -mo NETCDF_DIM_time_DEF= -mo NETCDF_DIM_time_VALUES= {input_path} {unique}_tmp1.tiff"
+    cmd = f"gdal_translate -co COMPRESS=DEFLATE -mo NETCDF_DIM_EXTRA= -mo NETCDF_DIM_time_DEF= -mo NETCDF_DIM_time_VALUES= {input_path} {unique}_1.tiff"
     os.system(cmd)
-    cmd = f"gdalwarp -t_srs EPSG:4326 {unique}_tmp1.tiff {unique}_tmp2.tiff"
+    cmd = f"gdalwarp -t_srs EPSG:4326 {unique}_1.tiff {unique}_2.tiff"
     os.system(cmd)
-    os.remove(f"{unique}_tmp1.tiff")
-    return f"{unique}_tmp2.tiff"
+    os.remove(f"{unique}_1.tiff")
+    return f"{unique}_2.tiff"
 
 
 # Avoid 'DataArray' object has no attribute 'set_close' by changing the code in the open_rasterio method
@@ -178,7 +178,7 @@ arrOEO = rioxarray.open_rasterio(flatten(tiff_path_oeo))
 arrGMV = arrGMV.rio.write_crs(rasterio.crs.CRS.from_epsg(4326), inplace=True)
 arrOEO = arrOEO.rio.write_crs(rasterio.crs.CRS.from_epsg(4326), inplace=True)
 
-arrOEO = arrOEO.rio.reproject_match(arrGMV)
+arrOEO = arrOEO.rio.reproject_match(arrGMV, resampling=rasterio.enums.Resampling.bilinear)
 
 arrOEO = arrOEO.values.ravel()
 arrGMV = arrGMV.values.ravel()

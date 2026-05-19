@@ -65,3 +65,4 @@ Format code:
 black --line-length 120 */*_openeo.py */*_UDF.py
 ```
 
+The stacbuilder used: https://github.com/VitoTAP/stac-catalog-builder
